@@ -1,36 +1,12 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Clock, Star, ArrowRight } from "lucide-react";
+import { useServices } from "@/hooks/useServices";
 import heroImage from "@/assets/hero-lashes.jpg";
 
-const services = [
-  {
-    title: "Fio a Fio",
-    description: "Extensão natural e delicada, fio por fio para um olhar sutil e elegante.",
-    duration: "2h",
-    price: "R$ 250",
-  },
-  {
-    title: "Volume Russo",
-    description: "Técnica de leque para um volume dramático e marcante.",
-    duration: "2h30",
-    price: "R$ 350",
-  },
-  {
-    title: "Volume Brasileiro",
-    description: "O equilíbrio perfeito entre natural e volumoso.",
-    duration: "2h",
-    price: "R$ 300",
-  },
-  {
-    title: "Manutenção",
-    description: "Reposição dos fios para manter seu olhar sempre perfeito.",
-    duration: "1h",
-    price: "R$ 120",
-  },
-];
-
 const Index = () => {
+  const { data: services, isLoading } = useServices();
+
   return (
     <div className="min-h-screen bg-background">
       {/* Navigation */}
@@ -38,7 +14,7 @@ const Index = () => {
         <div className="container flex items-center justify-between h-16">
           <Link to="/" className="font-display text-xl font-semibold text-foreground tracking-tight">
             <Sparkles className="inline-block w-5 h-5 mr-1.5 text-primary" />
-            Lash Studio
+            Studio Karol Negrini
           </Link>
           <div className="flex items-center gap-3">
             <Link to="/login">
@@ -85,7 +61,7 @@ const Index = () => {
             <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/10">
               <img
                 src={heroImage}
-                alt="Extensão de cílios profissional"
+                alt="Extensão de cílios profissional — Studio Karol Negrini"
                 className="w-full h-[500px] object-cover"
                 loading="eager"
               />
@@ -122,24 +98,46 @@ const Index = () => {
               Cada técnica é escolhida para valorizar o formato dos seus olhos.
             </p>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {services.map((service, i) => (
-              <div
-                key={service.title}
-                className="group bg-card rounded-xl p-6 shadow-sm hover:shadow-md border transition-shadow duration-300"
-                style={{ animation: `fade-up 0.7s cubic-bezier(0.16,1,0.3,1) ${0.1 * i}s both` }}
-              >
-                <h3 className="font-display text-lg font-semibold text-foreground mb-2">{service.title}</h3>
-                <p className="text-muted-foreground text-sm mb-4 text-pretty leading-relaxed">{service.description}</p>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="flex items-center gap-1 text-muted-foreground">
-                    <Clock className="w-3.5 h-3.5" /> {service.duration}
-                  </span>
-                  <span className="font-semibold text-primary">{service.price}</span>
+
+          {isLoading ? (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="bg-card rounded-xl p-6 border animate-pulse h-48" />
+              ))}
+            </div>
+          ) : (
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {services?.map((service, i) => (
+                <div
+                  key={service.id}
+                  className="group bg-card rounded-xl overflow-hidden shadow-sm hover:shadow-md border transition-shadow duration-300"
+                  style={{ animation: `fade-up 0.7s cubic-bezier(0.16,1,0.3,1) ${0.1 * i}s both` }}
+                >
+                  {service.image_url && (
+                    <img
+                      src={service.image_url}
+                      alt={service.title}
+                      className="w-full h-36 object-cover"
+                      loading="lazy"
+                    />
+                  )}
+                  <div className="p-6">
+                    <h3 className="font-display text-lg font-semibold text-foreground mb-2">{service.title}</h3>
+                    {service.description && (
+                      <p className="text-muted-foreground text-sm mb-4 text-pretty leading-relaxed">{service.description}</p>
+                    )}
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-1 text-muted-foreground">
+                        <Clock className="w-3.5 h-3.5" /> {service.duration}
+                      </span>
+                      <span className="font-semibold text-primary">R$ {service.price}</span>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
+
           <div className="text-center mt-12">
             <Link to="/agendar">
               <Button variant="hero" size="lg" className="gap-2">
@@ -156,7 +154,7 @@ const Index = () => {
         <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
           <div className="flex items-center gap-1.5 font-display text-foreground font-semibold">
             <Sparkles className="w-4 h-4 text-primary" />
-            Lash Studio
+            Studio Karol Negrini
           </div>
           <p>© {new Date().getFullYear()} Todos os direitos reservados.</p>
         </div>
