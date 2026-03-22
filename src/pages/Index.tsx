@@ -1,16 +1,168 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Sparkles, Clock, Star, ArrowRight } from "lucide-react";
+import heroImage from "@/assets/hero-lashes.jpg";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const services = [
+  {
+    title: "Fio a Fio",
+    description: "Extensão natural e delicada, fio por fio para um olhar sutil e elegante.",
+    duration: "2h",
+    price: "R$ 250",
+  },
+  {
+    title: "Volume Russo",
+    description: "Técnica de leque para um volume dramático e marcante.",
+    duration: "2h30",
+    price: "R$ 350",
+  },
+  {
+    title: "Volume Brasileiro",
+    description: "O equilíbrio perfeito entre natural e volumoso.",
+    duration: "2h",
+    price: "R$ 300",
+  },
+  {
+    title: "Manutenção",
+    description: "Reposição dos fios para manter seu olhar sempre perfeito.",
+    duration: "1h",
+    price: "R$ 120",
+  },
+];
+
+const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="min-h-screen bg-background">
+      {/* Navigation */}
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b">
+        <div className="container flex items-center justify-between h-16">
+          <Link to="/" className="font-display text-xl font-semibold text-foreground tracking-tight">
+            <Sparkles className="inline-block w-5 h-5 mr-1.5 text-primary" />
+            Lash Studio
+          </Link>
+          <div className="flex items-center gap-3">
+            <Link to="/login">
+              <Button variant="ghost" size="sm">Entrar</Button>
+            </Link>
+            <Link to="/agendar">
+              <Button variant="hero" size="sm">Agendar</Button>
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="relative pt-16 overflow-hidden">
+        <div className="container grid lg:grid-cols-2 gap-12 items-center min-h-[85vh] py-16 lg:py-0">
+          <div className="space-y-8" style={{ animation: "fade-up 0.8s cubic-bezier(0.16,1,0.3,1) both" }}>
+            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium">
+              <Sparkles className="w-3.5 h-3.5" />
+              Extensão de Cílios Profissional
+            </div>
+            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-[1.1] text-balance">
+              Seu olhar merece brilhar
+            </h1>
+            <p className="text-muted-foreground text-lg max-w-md text-pretty leading-relaxed">
+              Realce sua beleza natural com extensões de cílios feitas por profissionais especializadas. Agende seu horário com facilidade.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Link to="/agendar">
+                <Button variant="hero" size="lg" className="gap-2">
+                  Agendar horário
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              </Link>
+              <a href="#servicos">
+                <Button variant="outline" size="lg">Ver serviços</Button>
+              </a>
+            </div>
+          </div>
+
+          <div
+            className="relative"
+            style={{ animation: "fade-in 1s cubic-bezier(0.16,1,0.3,1) 0.3s both" }}
+          >
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-primary/10">
+              <img
+                src={heroImage}
+                alt="Extensão de cílios profissional"
+                className="w-full h-[500px] object-cover"
+                loading="eager"
+              />
+            </div>
+            <div className="absolute -bottom-4 -left-4 bg-card rounded-xl p-4 shadow-lg border">
+              <div className="flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-medium text-primary">M</div>
+                  <div className="w-8 h-8 rounded-full bg-accent/30 flex items-center justify-center text-xs font-medium text-accent-foreground">A</div>
+                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-medium text-secondary-foreground">C</div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-3 h-3 fill-accent text-accent" />
+                    ))}
+                  </div>
+                  <p className="text-xs text-muted-foreground">+200 clientes satisfeitas</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Services */}
+      <section id="servicos" className="py-24 bg-secondary/30">
+        <div className="container">
+          <div className="text-center mb-16 space-y-4">
+            <h2 className="font-display text-3xl sm:text-4xl font-bold text-foreground text-balance">
+              Nossos Serviços
+            </h2>
+            <p className="text-muted-foreground text-lg max-w-lg mx-auto text-pretty">
+              Cada técnica é escolhida para valorizar o formato dos seus olhos.
+            </p>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {services.map((service, i) => (
+              <div
+                key={service.title}
+                className="group bg-card rounded-xl p-6 shadow-sm hover:shadow-md border transition-shadow duration-300"
+                style={{ animation: `fade-up 0.7s cubic-bezier(0.16,1,0.3,1) ${0.1 * i}s both` }}
+              >
+                <h3 className="font-display text-lg font-semibold text-foreground mb-2">{service.title}</h3>
+                <p className="text-muted-foreground text-sm mb-4 text-pretty leading-relaxed">{service.description}</p>
+                <div className="flex items-center justify-between text-sm">
+                  <span className="flex items-center gap-1 text-muted-foreground">
+                    <Clock className="w-3.5 h-3.5" /> {service.duration}
+                  </span>
+                  <span className="font-semibold text-primary">{service.price}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="text-center mt-12">
+            <Link to="/agendar">
+              <Button variant="hero" size="lg" className="gap-2">
+                Agendar agora
+                <ArrowRight className="w-4 h-4" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="py-12 border-t">
+        <div className="container flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-1.5 font-display text-foreground font-semibold">
+            <Sparkles className="w-4 h-4 text-primary" />
+            Lash Studio
+          </div>
+          <p>© {new Date().getFullYear()} Todos os direitos reservados.</p>
+        </div>
+      </footer>
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
