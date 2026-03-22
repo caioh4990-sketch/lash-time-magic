@@ -101,7 +101,7 @@ const Dashboard = () => {
         <div className="container flex items-center justify-between h-16">
           <Link to="/" className="font-display text-lg font-semibold text-foreground flex items-center gap-1.5">
             <Sparkles className="w-5 h-5 text-primary" />
-            {isAdmin ? "Painel Admin" : "Meus Agendamentos"}
+            Studio Karol Negrini
           </Link>
           <div className="flex items-center gap-3">
             {!isAdmin && (
