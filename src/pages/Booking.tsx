@@ -8,19 +8,14 @@ import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-
-const services = [
-  { id: "fio-a-fio", title: "Fio a Fio", duration: "2h", price: 250 },
-  { id: "volume-russo", title: "Volume Russo", duration: "2h30", price: 350 },
-  { id: "volume-brasileiro", title: "Volume Brasileiro", duration: "2h", price: 300 },
-  { id: "manutencao", title: "Manutenção", duration: "1h", price: 120 },
-];
+import { useServices, type Service } from "@/hooks/useServices";
 
 const Booking = () => {
   const navigate = useNavigate();
+  const { data: services, isLoading: loadingServices } = useServices();
   const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(1);
-  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
@@ -40,7 +35,6 @@ const Booking = () => {
   useEffect(() => {
     if (!selectedDate) return;
     const dayOfWeek = selectedDate.getDay();
-    // Simple default: Mon-Fri 9-18, Sat 9-14
     const times: string[] = [];
     const start = 9;
     const end = dayOfWeek === 6 ? 14 : dayOfWeek === 0 ? 0 : 18;
@@ -52,22 +46,21 @@ const Booking = () => {
     setSelectedTime(null);
   }, [selectedDate]);
 
+  const service = services?.find((s) => s.id === selectedServiceId);
+
   const handleConfirm = async () => {
-    if (!selectedService || !selectedDate || !selectedTime || !user) return;
+    if (!service || !selectedDate || !selectedTime || !user) return;
     setLoading(true);
     try {
-      const service = services.find((s) => s.id === selectedService);
       const dateStr = format(selectedDate, "yyyy-MM-dd");
-
       const { error } = await supabase.from("appointments").insert({
         user_id: user.id,
-        service_name: service?.title,
+        service_name: service.title,
         appointment_date: dateStr,
         appointment_time: selectedTime,
-        price: service?.price,
+        price: service.price,
         status: "confirmed",
       });
-
       if (error) throw error;
       toast.success("Agendamento confirmado!");
       navigate("/dashboard");
@@ -77,8 +70,6 @@ const Booking = () => {
       setLoading(false);
     }
   };
-
-  const service = services.find((s) => s.id === selectedService);
 
   return (
     <div className="min-h-screen bg-background">
@@ -115,30 +106,43 @@ const Booking = () => {
         {step === 1 && (
           <div className="space-y-6">
             <h2 className="font-display text-2xl font-bold text-center">Escolha o serviço</h2>
-            <div className="grid sm:grid-cols-2 gap-4">
-              {services.map((s) => (
-                <button
-                  key={s.id}
-                  onClick={() => setSelectedService(s.id)}
-                  className={cn(
-                    "p-5 rounded-xl border text-left transition-all hover:shadow-md active:scale-[0.98]",
-                    selectedService === s.id
-                      ? "border-primary bg-primary/5 shadow-sm"
-                      : "border-border bg-card hover:border-primary/30"
-                  )}
-                >
-                  <h3 className="font-display font-semibold text-foreground">{s.title}</h3>
-                  <div className="flex items-center justify-between mt-2 text-sm">
-                    <span className="flex items-center gap-1 text-muted-foreground">
-                      <Clock className="w-3.5 h-3.5" /> {s.duration}
-                    </span>
-                    <span className="font-semibold text-primary">R$ {s.price}</span>
-                  </div>
-                </button>
-              ))}
-            </div>
+            {loadingServices ? (
+              <div className="grid sm:grid-cols-2 gap-4">
+                {[1, 2, 3, 4].map((i) => <div key={i} className="h-24 rounded-xl border animate-pulse bg-muted" />)}
+              </div>
+            ) : (
+              <div className="grid sm:grid-cols-2 gap-4">
+                {services?.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => setSelectedServiceId(s.id)}
+                    className={cn(
+                      "p-5 rounded-xl border text-left transition-all hover:shadow-md active:scale-[0.98]",
+                      selectedServiceId === s.id
+                        ? "border-primary bg-primary/5 shadow-sm"
+                        : "border-border bg-card hover:border-primary/30"
+                    )}
+                  >
+                    <div className="flex gap-3">
+                      {s.image_url && (
+                        <img src={s.image_url} alt={s.title} className="w-14 h-14 rounded-lg object-cover flex-shrink-0" />
+                      )}
+                      <div className="flex-1">
+                        <h3 className="font-display font-semibold text-foreground">{s.title}</h3>
+                        <div className="flex items-center justify-between mt-2 text-sm">
+                          <span className="flex items-center gap-1 text-muted-foreground">
+                            <Clock className="w-3.5 h-3.5" /> {s.duration}
+                          </span>
+                          <span className="font-semibold text-primary">R$ {s.price}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
             <div className="text-center">
-              <Button onClick={() => setStep(2)} disabled={!selectedService} variant="hero" size="lg">
+              <Button onClick={() => setStep(2)} disabled={!selectedServiceId} variant="hero" size="lg">
                 Continuar
               </Button>
             </div>
@@ -207,9 +211,7 @@ const Booking = () => {
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Data</span>
-                <span className="font-medium text-foreground">
-                  {format(selectedDate, "dd/MM/yyyy")}
-                </span>
+                <span className="font-medium text-foreground">{format(selectedDate, "dd/MM/yyyy")}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Horário</span>

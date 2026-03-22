@@ -54,7 +54,7 @@ const Login = () => {
           </Link>
           <div className="flex items-center justify-center gap-2 font-display text-2xl font-bold text-foreground">
             <Sparkles className="w-6 h-6 text-primary" />
-            Lash Studio
+            Studio Karol Negrini
           </div>
           <p className="text-muted-foreground">
             {isSignUp ? "Crie sua conta" : "Entre na sua conta"}

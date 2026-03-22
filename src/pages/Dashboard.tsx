@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Sparkles, LogOut, CalendarPlus, Calendar, Clock, User } from "lucide-react";
+import { Sparkles, LogOut, CalendarPlus, Calendar, Clock, User, Settings } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -101,9 +101,17 @@ const Dashboard = () => {
         <div className="container flex items-center justify-between h-16">
           <Link to="/" className="font-display text-lg font-semibold text-foreground flex items-center gap-1.5">
             <Sparkles className="w-5 h-5 text-primary" />
-            {isAdmin ? "Painel Admin" : "Meus Agendamentos"}
+            Studio Karol Negrini
           </Link>
           <div className="flex items-center gap-3">
+            {isAdmin && (
+              <Link to="/admin/servicos">
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  <Settings className="w-4 h-4" />
+                  Serviços
+                </Button>
+              </Link>
+            )}
             {!isAdmin && (
               <Link to="/agendar">
                 <Button variant="hero" size="sm" className="gap-1.5">
