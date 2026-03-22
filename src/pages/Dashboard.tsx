@@ -104,6 +104,14 @@ const Dashboard = () => {
             Studio Karol Negrini
           </Link>
           <div className="flex items-center gap-3">
+            {isAdmin && (
+              <Link to="/admin/servicos">
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  <Settings className="w-4 h-4" />
+                  Serviços
+                </Button>
+              </Link>
+            )}
             {!isAdmin && (
               <Link to="/agendar">
                 <Button variant="hero" size="sm" className="gap-1.5">
