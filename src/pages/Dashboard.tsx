@@ -74,10 +74,10 @@ const Dashboard = () => {
   };
 
   const statusColors: Record<string, string> = {
-    confirmed: "bg-green-100 text-green-700",
-    cancelled: "bg-red-100 text-red-700",
-    completed: "bg-blue-100 text-blue-700",
-    pending: "bg-yellow-100 text-yellow-700",
+    confirmed: "bg-green-900/30 text-green-400",
+    cancelled: "bg-red-900/30 text-red-400",
+    completed: "bg-blue-900/30 text-blue-400",
+    pending: "bg-yellow-900/30 text-yellow-400",
   };
 
   const statusLabels: Record<string, string> = {
