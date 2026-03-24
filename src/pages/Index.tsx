@@ -33,13 +33,13 @@ const Index = () => {
           <div className="space-y-8" style={{ animation: "fade-up 0.8s cubic-bezier(0.16,1,0.3,1) both" }}>
             <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-sm font-medium">
               <Sparkles className="w-3.5 h-3.5" />
-              Extensão de Cílios Profissional
+              Cílios, Brow & Designer — Serra, ES 📍
             </div>
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground leading-[1.1] text-balance">
-              Seu olhar merece brilhar
+              Harmonia, naturalidade e alto padrão ✨
             </h1>
             <p className="text-muted-foreground text-lg max-w-md text-pretty leading-relaxed">
-              Realce sua beleza natural com extensões de cílios feitas por profissionais especializadas. Agende seu horário com facilidade.
+              Formação nacional e internacional. Realce sua beleza natural com extensões de cílios feitas por profissional especializada. Agende seu horário com facilidade.
             </p>
             <div className="flex flex-wrap gap-4">
               <Link to="/agendar">
@@ -155,6 +155,14 @@ const Index = () => {
           <div className="flex items-center gap-1.5 font-display text-foreground font-semibold">
             <Sparkles className="w-4 h-4 text-primary" />
             Studio Karol Negrini
+          </div>
+          <div className="flex items-center gap-4">
+            <a href="https://instagram.com/studio.karolnegrini" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              Instagram
+            </a>
+            <a href="https://wa.me/message/BACPL3J2YH5IN1" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+              WhatsApp
+            </a>
           </div>
           <p>© {new Date().getFullYear()} Todos os direitos reservados.</p>
         </div>
