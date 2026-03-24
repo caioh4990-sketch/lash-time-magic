@@ -51,6 +51,19 @@ const Booking = () => {
   const handleConfirm = async () => {
     if (!service || !selectedDate || !selectedTime || !user) return;
     setLoading(true);
+    
+    // Preparar URL do WhatsApp ANTES da chamada async (evita bloqueio de popup)
+    const dateFormatted = format(selectedDate, "dd/MM/yyyy");
+    const msg = encodeURIComponent(
+      `Olá! Acabei de agendar pelo site:\n\n` +
+      `📋 Serviço: ${service.title}\n` +
+      `📅 Data: ${dateFormatted}\n` +
+      `🕐 Horário: ${selectedTime}\n` +
+      `💰 Valor: R$ ${service.price}\n\n` +
+      `Aguardo confirmação! 😊`
+    );
+    const whatsappUrl = `https://wa.me/5527998277969?text=${msg}`;
+    
     try {
       const dateStr = format(selectedDate, "yyyy-MM-dd");
       const { error } = await supabase.from("appointments").insert({
@@ -62,24 +75,14 @@ const Booking = () => {
         status: "confirmed",
       });
       if (error) throw error;
-      toast.success("Agendamento confirmado!");
+      toast.success("Agendamento confirmado! Redirecionando para o WhatsApp...");
       
-      // Redirecionar para WhatsApp com mensagem pré-pronta
-      const dateFormatted = format(selectedDate, "dd/MM/yyyy");
-      const msg = encodeURIComponent(
-        `Olá! Acabei de agendar pelo site:\n\n` +
-        `📋 Serviço: ${service.title}\n` +
-        `📅 Data: ${dateFormatted}\n` +
-        `🕐 Horário: ${selectedTime}\n` +
-        `💰 Valor: R$ ${service.price}\n\n` +
-        `Aguardo confirmação! 😊`
-      );
-      window.open(`https://wa.me/5527998277969?text=${msg}`, "_blank");
-      
-      navigate("/dashboard");
+      // Usar location.href para evitar bloqueio de popup
+      setTimeout(() => {
+        window.location.href = whatsappUrl;
+      }, 1000);
     } catch (error: any) {
       toast.error(error.message || "Erro ao agendar.");
-    } finally {
       setLoading(false);
     }
   };
