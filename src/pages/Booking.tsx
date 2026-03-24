@@ -85,8 +85,6 @@ const Booking = () => {
       toast.error(error.message || "Erro ao agendar.");
       setLoading(false);
     }
-      setLoading(false);
-    }
   };
 
   return (
