@@ -157,10 +157,10 @@ const Index = () => {
             Studio Karol Negrini
           </div>
           <div className="flex items-center gap-4">
-            <a href="https://instagram.com/studio.karolnegrini" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            <a href="https://www.instagram.com/studio.karolnegrini/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               Instagram
             </a>
-            <a href="https://wa.me/message/BACPL3J2YH5IN1" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            <a href="https://wa.me/5527998277969" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               WhatsApp
             </a>
           </div>

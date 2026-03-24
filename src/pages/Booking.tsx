@@ -63,6 +63,19 @@ const Booking = () => {
       });
       if (error) throw error;
       toast.success("Agendamento confirmado!");
+      
+      // Redirecionar para WhatsApp com mensagem pré-pronta
+      const dateFormatted = format(selectedDate, "dd/MM/yyyy");
+      const msg = encodeURIComponent(
+        `Olá! Acabei de agendar pelo site:\n\n` +
+        `📋 Serviço: ${service.title}\n` +
+        `📅 Data: ${dateFormatted}\n` +
+        `🕐 Horário: ${selectedTime}\n` +
+        `💰 Valor: R$ ${service.price}\n\n` +
+        `Aguardo confirmação! 😊`
+      );
+      window.open(`https://wa.me/5527998277969?text=${msg}`, "_blank");
+      
       navigate("/dashboard");
     } catch (error: any) {
       toast.error(error.message || "Erro ao agendar.");
