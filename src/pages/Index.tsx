@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Sparkles, Clock, Star, ArrowRight } from "lucide-react";
 import { useServices } from "@/hooks/useServices";
+import GallerySection from "@/components/GallerySection";
 import heroImage from "@/assets/hero-lashes.jpg";
 
 const Index = () => {
@@ -148,6 +149,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* Gallery */}
+      <GallerySection />
 
       {/* Footer */}
       <footer className="py-12 border-t">
