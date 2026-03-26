@@ -18,35 +18,41 @@ export type Database = {
         Row: {
           appointment_date: string
           appointment_time: string
+          client_name: string | null
+          client_phone: string | null
           created_at: string
           id: string
           price: number
           service_name: string
           status: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           appointment_date: string
           appointment_time: string
+          client_name?: string | null
+          client_phone?: string | null
           created_at?: string
           id?: string
           price: number
           service_name: string
           status?: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           appointment_date?: string
           appointment_time?: string
+          client_name?: string | null
+          client_phone?: string | null
           created_at?: string
           id?: string
           price?: number
           service_name?: string
           status?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }

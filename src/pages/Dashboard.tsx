@@ -1,55 +1,45 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Sparkles, LogOut, CalendarPlus, Calendar, Clock, User, Settings, Image } from "lucide-react";
+import { Sparkles, LogOut, Calendar, Clock, User, Phone, Settings, Image } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [appointments, setAppointments] = useState<any[]>([]);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const init = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        navigate("/login");
-        return;
-      }
+      if (!session) { navigate("/login"); return; }
       setUser(session.user);
 
-      // Check admin role
+      // Only admins can access dashboard
       const { data: roles } = await supabase
         .from("user_roles")
         .select("role")
         .eq("user_id", session.user.id);
-      
-      if (roles?.some((r: any) => r.role === "admin")) {
-        setIsAdmin(true);
-      }
 
-      // Fetch appointments
-      let query = supabase.from("appointments").select("*").order("appointment_date", { ascending: true });
-      
       if (!roles?.some((r: any) => r.role === "admin")) {
-        query = query.eq("user_id", session.user.id);
+        toast.error("Acesso restrito ao administrador.");
+        navigate("/");
+        return;
       }
 
-      const { data, error } = await query;
-      if (error) {
-        toast.error("Erro ao carregar agendamentos.");
-      } else {
-        setAppointments(data || []);
-      }
+      const { data, error } = await supabase
+        .from("appointments")
+        .select("*")
+        .order("appointment_date", { ascending: true });
+
+      if (error) toast.error("Erro ao carregar agendamentos.");
+      else setAppointments(data || []);
       setLoading(false);
     };
-
     init();
   }, [navigate]);
 
@@ -103,31 +93,19 @@ const Dashboard = () => {
             <Sparkles className="w-5 h-5 text-primary" />
             Studio Karol Negrini
           </Link>
-          <div className="flex items-center gap-3">
-            {isAdmin && (
-              <div className="flex items-center gap-2">
-                <Link to="/admin/servicos">
-                  <Button variant="outline" size="sm" className="gap-1.5">
-                    <Settings className="w-4 h-4" />
-                    Serviços
-                  </Button>
-                </Link>
-                <Link to="/admin/galeria">
-                  <Button variant="outline" size="sm" className="gap-1.5">
-                    <Image className="w-4 h-4" />
-                    Galeria
-                  </Button>
-                </Link>
-              </div>
-            )}
-            {!isAdmin && (
-              <Link to="/agendar">
-                <Button variant="hero" size="sm" className="gap-1.5">
-                  <CalendarPlus className="w-4 h-4" />
-                  Novo
-                </Button>
-              </Link>
-            )}
+          <div className="flex items-center gap-2">
+            <Link to="/admin/servicos">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Settings className="w-4 h-4" />
+                Serviços
+              </Button>
+            </Link>
+            <Link to="/admin/galeria">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Image className="w-4 h-4" />
+                Galeria
+              </Button>
+            </Link>
             <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-1.5 text-muted-foreground">
               <LogOut className="w-4 h-4" />
               Sair
@@ -139,12 +117,10 @@ const Dashboard = () => {
       <div className="container py-12 max-w-4xl" style={{ animation: "fade-up 0.7s cubic-bezier(0.16,1,0.3,1) both" }}>
         <div className="mb-8">
           <h1 className="font-display text-3xl font-bold text-foreground">
-            Olá, {user?.user_metadata?.full_name || "Cliente"} 👋
+            Painel Administrativo 👋
           </h1>
           <p className="text-muted-foreground mt-1">
-            {isAdmin
-              ? "Gerencie todos os agendamentos do studio."
-              : "Veja e gerencie seus agendamentos."}
+            Gerencie todos os agendamentos do studio.
           </p>
         </div>
 
@@ -152,11 +128,6 @@ const Dashboard = () => {
           <div className="text-center py-16 space-y-4">
             <Calendar className="w-12 h-12 mx-auto text-muted-foreground/50" />
             <p className="text-muted-foreground">Nenhum agendamento encontrado.</p>
-            {!isAdmin && (
-              <Link to="/agendar">
-                <Button variant="hero">Agendar agora</Button>
-              </Link>
-            )}
           </div>
         ) : (
           <div className="space-y-4">
@@ -169,6 +140,18 @@ const Dashboard = () => {
                 <div className="space-y-1">
                   <h3 className="font-display font-semibold text-foreground">{apt.service_name}</h3>
                   <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
+                    {apt.client_name && (
+                      <span className="flex items-center gap-1">
+                        <User className="w-3.5 h-3.5" />
+                        {apt.client_name}
+                      </span>
+                    )}
+                    {apt.client_phone && (
+                      <span className="flex items-center gap-1">
+                        <Phone className="w-3.5 h-3.5" />
+                        {apt.client_phone}
+                      </span>
+                    )}
                     <span className="flex items-center gap-1">
                       <Calendar className="w-3.5 h-3.5" />
                       {apt.appointment_date
@@ -179,12 +162,6 @@ const Dashboard = () => {
                       <Clock className="w-3.5 h-3.5" />
                       {apt.appointment_time || "—"}
                     </span>
-                    {isAdmin && (
-                      <span className="flex items-center gap-1">
-                        <User className="w-3.5 h-3.5" />
-                        {apt.user_id?.slice(0, 8)}...
-                      </span>
-                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
@@ -194,7 +171,7 @@ const Dashboard = () => {
                   <span className="font-semibold text-primary">
                     R$ {apt.price}
                   </span>
-                  {isAdmin && apt.status === "confirmed" && (
+                  {apt.status === "confirmed" && (
                     <div className="flex gap-1">
                       <Button
                         variant="ghost"
@@ -213,16 +190,6 @@ const Dashboard = () => {
                         Cancelar
                       </Button>
                     </div>
-                  )}
-                  {!isAdmin && apt.status === "confirmed" && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs text-destructive"
-                      onClick={() => handleStatusChange(apt.id, "cancelled")}
-                    >
-                      Cancelar
-                    </Button>
                   )}
                 </div>
               </div>

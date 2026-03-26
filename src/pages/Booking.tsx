@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Sparkles, ArrowLeft, Clock, Check } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Sparkles, ArrowLeft, Clock, Check, User, Phone } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -11,26 +13,15 @@ import { cn } from "@/lib/utils";
 import { useServices, type Service } from "@/hooks/useServices";
 
 const Booking = () => {
-  const navigate = useNavigate();
   const { data: services, isLoading: loadingServices } = useServices();
-  const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(1);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [availableTimes, setAvailableTimes] = useState<string[]>([]);
+  const [clientName, setClientName] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!session) {
-        toast.info("Faça login para agendar.");
-        navigate("/login");
-      } else {
-        setUser(session.user);
-      }
-    });
-  }, [navigate]);
 
   useEffect(() => {
     if (!selectedDate) return;
@@ -49,13 +40,13 @@ const Booking = () => {
   const service = services?.find((s) => s.id === selectedServiceId);
 
   const handleConfirm = async () => {
-    if (!service || !selectedDate || !selectedTime || !user) return;
+    if (!service || !selectedDate || !selectedTime || !clientName.trim() || !clientPhone.trim()) return;
     setLoading(true);
-    
-    // Preparar URL do WhatsApp ANTES da chamada async (evita bloqueio de popup)
+
     const dateFormatted = format(selectedDate, "dd/MM/yyyy");
     const msg = encodeURIComponent(
       `Olá! Acabei de agendar pelo site:\n\n` +
+      `👤 Nome: ${clientName}\n` +
       `📋 Serviço: ${service.title}\n` +
       `📅 Data: ${dateFormatted}\n` +
       `🕐 Horário: ${selectedTime}\n` +
@@ -63,21 +54,21 @@ const Booking = () => {
       `Aguardo confirmação! 😊`
     );
     const whatsappUrl = `https://wa.me/5527998277969?text=${msg}`;
-    
+
     try {
       const dateStr = format(selectedDate, "yyyy-MM-dd");
       const { error } = await supabase.from("appointments").insert({
-        user_id: user.id,
         service_name: service.title,
         appointment_date: dateStr,
         appointment_time: selectedTime,
         price: service.price,
         status: "confirmed",
+        client_name: clientName.trim(),
+        client_phone: clientPhone.trim(),
       });
       if (error) throw error;
       toast.success("Agendamento confirmado! Redirecionando para o WhatsApp...");
-      
-      // Usar location.href para evitar bloqueio de popup
+
       setTimeout(() => {
         window.location.href = whatsappUrl;
       }, 1000);
@@ -105,7 +96,7 @@ const Booking = () => {
       <div className="container max-w-2xl py-12 space-y-8" style={{ animation: "fade-up 0.7s cubic-bezier(0.16,1,0.3,1) both" }}>
         {/* Steps indicator */}
         <div className="flex items-center gap-2 justify-center">
-          {[1, 2, 3].map((s) => (
+          {[1, 2, 3, 4].map((s) => (
             <div key={s} className="flex items-center gap-2">
               <div className={cn(
                 "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-colors",
@@ -113,7 +104,7 @@ const Booking = () => {
               )}>
                 {step > s ? <Check className="w-4 h-4" /> : s}
               </div>
-              {s < 3 && <div className={cn("w-12 h-0.5", step > s ? "bg-primary" : "bg-muted")} />}
+              {s < 4 && <div className={cn("w-12 h-0.5", step > s ? "bg-primary" : "bg-muted")} />}
             </div>
           ))}
         </div>
@@ -165,8 +156,53 @@ const Booking = () => {
           </div>
         )}
 
-        {/* Step 2: Date & Time */}
+        {/* Step 2: Client info */}
         {step === 2 && (
+          <div className="space-y-6">
+            <h2 className="font-display text-2xl font-bold text-center">Seus dados</h2>
+            <div className="bg-card rounded-xl border p-6 space-y-4 max-w-sm mx-auto">
+              <div className="space-y-2">
+                <Label htmlFor="clientName">Nome completo *</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="clientName"
+                    value={clientName}
+                    onChange={(e) => setClientName(e.target.value)}
+                    placeholder="Maria Silva"
+                    className="pl-10"
+                    maxLength={100}
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="clientPhone">WhatsApp *</Label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    id="clientPhone"
+                    value={clientPhone}
+                    onChange={(e) => setClientPhone(e.target.value)}
+                    placeholder="(27) 99999-9999"
+                    className="pl-10"
+                    maxLength={20}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-center gap-3">
+              <Button variant="outline" onClick={() => setStep(1)}>Voltar</Button>
+              <Button onClick={() => setStep(3)} disabled={!clientName.trim() || !clientPhone.trim()} variant="hero" size="lg">
+                Continuar
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 3: Date & Time */}
+        {step === 3 && (
           <div className="space-y-6">
             <h2 className="font-display text-2xl font-bold text-center">Escolha a data e horário</h2>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
@@ -208,19 +244,27 @@ const Booking = () => {
               )}
             </div>
             <div className="flex justify-center gap-3">
-              <Button variant="outline" onClick={() => setStep(1)}>Voltar</Button>
-              <Button onClick={() => setStep(3)} disabled={!selectedDate || !selectedTime} variant="hero" size="lg">
+              <Button variant="outline" onClick={() => setStep(2)}>Voltar</Button>
+              <Button onClick={() => setStep(4)} disabled={!selectedDate || !selectedTime} variant="hero" size="lg">
                 Continuar
               </Button>
             </div>
           </div>
         )}
 
-        {/* Step 3: Confirm */}
-        {step === 3 && service && selectedDate && selectedTime && (
+        {/* Step 4: Confirm */}
+        {step === 4 && service && selectedDate && selectedTime && (
           <div className="space-y-6">
             <h2 className="font-display text-2xl font-bold text-center">Confirmar agendamento</h2>
             <div className="bg-card rounded-xl border p-6 shadow-sm space-y-4 max-w-sm mx-auto">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Cliente</span>
+                <span className="font-medium text-foreground">{clientName}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">WhatsApp</span>
+                <span className="font-medium text-foreground">{clientPhone}</span>
+              </div>
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Serviço</span>
                 <span className="font-medium text-foreground">{service.title}</span>
@@ -244,7 +288,7 @@ const Booking = () => {
               </div>
             </div>
             <div className="flex justify-center gap-3">
-              <Button variant="outline" onClick={() => setStep(2)}>Voltar</Button>
+              <Button variant="outline" onClick={() => setStep(3)}>Voltar</Button>
               <Button onClick={handleConfirm} disabled={loading} variant="hero" size="lg">
                 {loading ? "Confirmando..." : "Confirmar"}
               </Button>
