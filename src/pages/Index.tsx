@@ -18,9 +18,6 @@ const Index = () => {
             Studio Karol Negrini
           </Link>
           <div className="flex items-center gap-3">
-            <Link to="/login">
-              <Button variant="ghost" size="sm">Entrar</Button>
-            </Link>
             <Link to="/agendar">
               <Button variant="hero" size="sm">Agendar</Button>
             </Link>
