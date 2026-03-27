@@ -133,6 +133,7 @@ const AdminServices = () => {
             image_url: form.image_url,
             active: form.active,
             sort_order: form.sort_order,
+            category_id: form.category_id,
           });
         if (error) throw error;
         toast.success("Serviço criado!");
