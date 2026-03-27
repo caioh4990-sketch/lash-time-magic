@@ -10,6 +10,7 @@ export interface Service {
   image_url: string | null;
   active: boolean;
   sort_order: number;
+  category_id: string | null;
 }
 
 export const useServices = () => {

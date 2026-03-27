@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Sparkles, LogOut, Calendar, Clock, User, Phone, Settings, Image } from "lucide-react";
+import { Sparkles, LogOut, Calendar, Clock, User, Phone, Settings, Image, Tag } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -98,6 +98,12 @@ const Dashboard = () => {
               <Button variant="outline" size="sm" className="gap-1.5">
                 <Settings className="w-4 h-4" />
                 Serviços
+              </Button>
+            </Link>
+            <Link to="/admin/categorias">
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Tag className="w-4 h-4" />
+                Categorias
               </Button>
             </Link>
             <Link to="/admin/galeria">
