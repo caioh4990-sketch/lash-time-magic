@@ -58,7 +58,7 @@ const Links = () => (
 
         {/* Site — secondary CTA */}
         <Link
-          to="/"
+          to="/site"
           className="group flex items-center justify-center gap-3 w-full py-4 rounded-2xl font-semibold text-base transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] border-2"
           style={{
             borderColor: "hsl(340 35% 55%)",

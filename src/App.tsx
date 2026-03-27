@@ -22,13 +22,13 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Index />} />
+          <Route path="/" element={<Links />} />
+          <Route path="/site" element={<Index />} />
           <Route path="/login" element={<Login />} />
           <Route path="/agendar" element={<Booking />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin/servicos" element={<AdminServices />} />
           <Route path="/admin/galeria" element={<AdminGallery />} />
-          <Route path="/links" element={<Links />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <WhatsAppFloat />
