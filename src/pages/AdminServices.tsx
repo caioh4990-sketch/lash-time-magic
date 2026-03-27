@@ -74,7 +74,6 @@ const AdminServices = () => {
       .order("sort_order");
     if (data) setCategories(data as ServiceCategory[]);
   };
-  };
 
   const handleImageUpload = async (file: File) => {
     setUploading(true);
