@@ -11,9 +11,12 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useServices, type Service } from "@/hooks/useServices";
+import { useCategories } from "@/hooks/useCategories";
 
 const Booking = () => {
   const { data: services, isLoading: loadingServices } = useServices();
+  const { data: categories } = useCategories();
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
