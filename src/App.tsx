@@ -9,6 +9,7 @@ import Booking from "./pages/Booking.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import AdminServices from "./pages/AdminServices.tsx";
 import AdminGallery from "./pages/AdminGallery.tsx";
+import Links from "./pages/Links.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import WhatsAppFloat from "./components/WhatsAppFloat";
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin/servicos" element={<AdminServices />} />
           <Route path="/admin/galeria" element={<AdminGallery />} />
+          <Route path="/links" element={<Links />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <WhatsAppFloat />
