@@ -67,6 +67,15 @@ const AdminServices = () => {
     setLoading(false);
   };
 
+  const fetchCategories = async () => {
+    const { data } = await supabase
+      .from("service_categories")
+      .select("*")
+      .order("sort_order");
+    if (data) setCategories(data as ServiceCategory[]);
+  };
+  };
+
   const handleImageUpload = async (file: File) => {
     setUploading(true);
     try {
@@ -108,6 +117,7 @@ const AdminServices = () => {
             image_url: form.image_url,
             active: form.active,
             sort_order: form.sort_order,
+            category_id: form.category_id,
           })
           .eq("id", editing.id);
         if (error) throw error;
@@ -159,6 +169,7 @@ const AdminServices = () => {
       image_url: s.image_url,
       active: s.active,
       sort_order: s.sort_order,
+      category_id: s.category_id,
     });
   };
 
@@ -295,6 +306,23 @@ const AdminServices = () => {
                   <Label htmlFor="duration">Duração *</Label>
                   <Input id="duration" value={form.duration} onChange={(e) => setForm((f) => ({ ...f, duration: e.target.value }))} placeholder="Ex: 2h" />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">Categoria *</Label>
+                <Select
+                  value={form.category_id || ""}
+                  onValueChange={(val) => setForm((f) => ({ ...f, category_id: val || null }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">
