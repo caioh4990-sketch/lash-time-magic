@@ -29,7 +29,6 @@ const App = () => (
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin/servicos" element={<AdminServices />} />
           <Route path="/admin/galeria" element={<AdminGallery />} />
-          <Route path="/links" element={<Links />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
         <WhatsAppFloat />
