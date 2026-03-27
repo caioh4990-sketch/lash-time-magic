@@ -9,6 +9,7 @@ import Booking from "./pages/Booking.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import AdminServices from "./pages/AdminServices.tsx";
 import AdminGallery from "./pages/AdminGallery.tsx";
+import Links from "./pages/Links.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import WhatsAppFloat from "./components/WhatsAppFloat";
 
