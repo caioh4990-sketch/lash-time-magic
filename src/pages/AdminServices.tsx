@@ -5,11 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Sparkles, ArrowLeft, Plus, Pencil, Trash2, Upload, X, Save } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import type { Service } from "@/hooks/useServices";
+import type { ServiceCategory } from "@/hooks/useCategories";
 
 const emptyService: Omit<Service, "id"> = {
   title: "",
@@ -19,11 +21,13 @@ const emptyService: Omit<Service, "id"> = {
   image_url: null,
   active: true,
   sort_order: 0,
+  category_id: null,
 };
 
 const AdminServices = () => {
   const navigate = useNavigate();
   const [services, setServices] = useState<Service[]>([]);
+  const [categories, setCategories] = useState<ServiceCategory[]>([]);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<Service | null>(null);
   const [creating, setCreating] = useState(false);
@@ -47,7 +51,7 @@ const AdminServices = () => {
         return;
       }
 
-      await fetchServices();
+      await Promise.all([fetchServices(), fetchCategories()]);
     };
     init();
   }, [navigate]);
@@ -61,6 +65,14 @@ const AdminServices = () => {
     if (error) toast.error("Erro ao carregar serviços.");
     else setServices(data as Service[]);
     setLoading(false);
+  };
+
+  const fetchCategories = async () => {
+    const { data } = await supabase
+      .from("service_categories")
+      .select("*")
+      .order("sort_order");
+    if (data) setCategories(data as ServiceCategory[]);
   };
 
   const handleImageUpload = async (file: File) => {
@@ -104,6 +116,7 @@ const AdminServices = () => {
             image_url: form.image_url,
             active: form.active,
             sort_order: form.sort_order,
+            category_id: form.category_id,
           })
           .eq("id", editing.id);
         if (error) throw error;
@@ -119,6 +132,7 @@ const AdminServices = () => {
             image_url: form.image_url,
             active: form.active,
             sort_order: form.sort_order,
+            category_id: form.category_id,
           });
         if (error) throw error;
         toast.success("Serviço criado!");
@@ -155,6 +169,7 @@ const AdminServices = () => {
       image_url: s.image_url,
       active: s.active,
       sort_order: s.sort_order,
+      category_id: s.category_id,
     });
   };
 
@@ -291,6 +306,23 @@ const AdminServices = () => {
                   <Label htmlFor="duration">Duração *</Label>
                   <Input id="duration" value={form.duration} onChange={(e) => setForm((f) => ({ ...f, duration: e.target.value }))} placeholder="Ex: 2h" />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="category">Categoria *</Label>
+                <Select
+                  value={form.category_id || ""}
+                  onValueChange={(val) => setForm((f) => ({ ...f, category_id: val || null }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione uma categoria" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
               <div className="space-y-2">

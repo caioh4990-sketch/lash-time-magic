@@ -1,29 +1,22 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
-export interface Service {
+export interface ServiceCategory {
   id: string;
-  title: string;
-  description: string | null;
-  duration: string;
-  price: number;
-  image_url: string | null;
-  active: boolean;
+  name: string;
   sort_order: number;
-  category_id: string | null;
 }
 
-export const useServices = () => {
+export const useCategories = () => {
   return useQuery({
-    queryKey: ["services"],
+    queryKey: ["service_categories"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from("services")
+        .from("service_categories")
         .select("*")
-        .eq("active", true)
         .order("sort_order");
       if (error) throw error;
-      return data as Service[];
+      return data as ServiceCategory[];
     },
   });
 };

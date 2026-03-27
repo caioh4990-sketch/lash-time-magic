@@ -11,9 +11,12 @@ import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useServices, type Service } from "@/hooks/useServices";
+import { useCategories } from "@/hooks/useCategories";
 
 const Booking = () => {
   const { data: services, isLoading: loadingServices } = useServices();
+  const { data: categories } = useCategories();
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
@@ -22,6 +25,17 @@ const Booking = () => {
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [loading, setLoading] = useState(false);
+
+  // Auto-select first category
+  useEffect(() => {
+    if (categories && categories.length > 0 && !selectedCategoryId) {
+      setSelectedCategoryId(categories[0].id);
+    }
+  }, [categories, selectedCategoryId]);
+
+  const filteredServices = services?.filter((s) =>
+    selectedCategoryId ? s.category_id === selectedCategoryId : true
+  );
 
   useEffect(() => {
     if (!selectedDate) return;
@@ -113,13 +127,34 @@ const Booking = () => {
         {step === 1 && (
           <div className="space-y-6">
             <h2 className="font-display text-2xl font-bold text-center">Escolha o serviço</h2>
+
+            {/* Category tabs */}
+            {categories && categories.length > 0 && (
+              <div className="flex flex-wrap gap-2 justify-center">
+                {categories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    onClick={() => { setSelectedCategoryId(cat.id); setSelectedServiceId(null); }}
+                    className={cn(
+                      "px-4 py-2 rounded-full text-sm font-medium transition-all",
+                      selectedCategoryId === cat.id
+                        ? "bg-primary text-primary-foreground shadow-sm"
+                        : "bg-muted text-muted-foreground hover:bg-primary/10 hover:text-primary"
+                    )}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+            )}
+
             {loadingServices ? (
               <div className="grid sm:grid-cols-2 gap-4">
                 {[1, 2, 3, 4].map((i) => <div key={i} className="h-24 rounded-xl border animate-pulse bg-muted" />)}
               </div>
-            ) : (
+            ) : filteredServices && filteredServices.length > 0 ? (
               <div className="grid sm:grid-cols-2 gap-4">
-                {services?.map((s) => (
+                {filteredServices.map((s) => (
                   <button
                     key={s.id}
                     onClick={() => setSelectedServiceId(s.id)}
@@ -136,17 +171,24 @@ const Booking = () => {
                       )}
                       <div className="flex-1">
                         <h3 className="font-display font-semibold text-foreground">{s.title}</h3>
+                        {s.description && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{s.description}</p>
+                        )}
                         <div className="flex items-center justify-between mt-2 text-sm">
                           <span className="flex items-center gap-1 text-muted-foreground">
                             <Clock className="w-3.5 h-3.5" /> {s.duration}
                           </span>
-                          <span className="font-semibold text-primary">R$ {s.price}</span>
+                          {s.price > 0 && (
+                            <span className="font-semibold text-primary">R$ {s.price}</span>
+                          )}
                         </div>
                       </div>
                     </div>
                   </button>
                 ))}
               </div>
+            ) : (
+              <p className="text-center text-muted-foreground py-8">Nenhum serviço nesta categoria.</p>
             )}
             <div className="text-center">
               <Button onClick={() => setStep(2)} disabled={!selectedServiceId} variant="hero" size="lg">
