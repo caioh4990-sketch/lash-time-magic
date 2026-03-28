@@ -56,6 +56,51 @@ export type Database = {
         }
         Relationships: []
       }
+      available_times: {
+        Row: {
+          active: boolean
+          created_at: string
+          day_of_week: number[]
+          id: string
+          time_slot: string
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          day_of_week?: number[]
+          id?: string
+          time_slot: string
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          day_of_week?: number[]
+          id?: string
+          time_slot?: string
+        }
+        Relationships: []
+      }
+      blocked_dates: {
+        Row: {
+          blocked_date: string
+          created_at: string
+          id: string
+          reason: string | null
+        }
+        Insert: {
+          blocked_date: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Update: {
+          blocked_date?: string
+          created_at?: string
+          id?: string
+          reason?: string | null
+        }
+        Relationships: []
+      }
       gallery_photos: {
         Row: {
           active: boolean

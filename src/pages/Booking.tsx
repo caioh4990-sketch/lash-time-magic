@@ -12,10 +12,13 @@ import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { useServices, type Service } from "@/hooks/useServices";
 import { useCategories } from "@/hooks/useCategories";
+import { useAvailableTimes, useBlockedDates, useBookedSlots } from "@/hooks/useSchedule";
 
 const Booking = () => {
   const { data: services, isLoading: loadingServices } = useServices();
   const { data: categories } = useCategories();
+  const { data: dbTimes } = useAvailableTimes();
+  const { data: blockedDates } = useBlockedDates();
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
   const [step, setStep] = useState(1);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
@@ -37,19 +40,24 @@ const Booking = () => {
     selectedCategoryId ? s.category_id === selectedCategoryId : true
   );
 
+  const selectedDateStr = selectedDate ? format(selectedDate, "yyyy-MM-dd") : null;
+  const { data: bookedSlots } = useBookedSlots(selectedDateStr);
+
+  // Build blocked date set for calendar
+  const blockedDateSet = new Set(blockedDates?.map((b) => b.blocked_date) || []);
+
+  // Compute available times from DB, filtering by day of week and booked slots
   useEffect(() => {
-    if (!selectedDate) return;
+    if (!selectedDate || !dbTimes) { setAvailableTimes([]); setSelectedTime(null); return; }
     const dayOfWeek = selectedDate.getDay();
-    const times: string[] = [];
-    const start = 9;
-    const end = dayOfWeek === 6 ? 14 : dayOfWeek === 0 ? 0 : 18;
-    for (let h = start; h < end; h++) {
-      times.push(`${String(h).padStart(2, "0")}:00`);
-      if (h + 1 < end) times.push(`${String(h).padStart(2, "0")}:30`);
-    }
+    const booked = new Set(bookedSlots || []);
+    const times = dbTimes
+      .filter((t) => t.day_of_week.includes(dayOfWeek))
+      .map((t) => t.time_slot)
+      .filter((t) => !booked.has(t));
     setAvailableTimes(times);
     setSelectedTime(null);
-  }, [selectedDate]);
+  }, [selectedDate, dbTimes, bookedSlots]);
 
   const service = services?.find((s) => s.id === selectedServiceId);
 
@@ -263,7 +271,12 @@ const Booking = () => {
                   selected={selectedDate}
                   onSelect={setSelectedDate}
                   locale={ptBR}
-                  disabled={(date) => date < new Date() || date.getDay() === 0}
+                  disabled={(date) => {
+                    const dateStr = format(date, "yyyy-MM-dd");
+                    return date < new Date() || blockedDateSet.has(dateStr);
+                  }}
+                  modifiers={{ blocked: (date) => blockedDateSet.has(format(date, "yyyy-MM-dd")) }}
+                  modifiersClassNames={{ blocked: "bg-destructive/20 text-destructive line-through" }}
                   className="pointer-events-auto"
                 />
               </div>
