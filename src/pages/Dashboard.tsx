@@ -118,6 +118,7 @@ const Dashboard = () => {
                 Agenda
               </Button>
             </Link>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-1.5 text-muted-foreground">
               <LogOut className="w-4 h-4" />
               Sair
             </Button>
