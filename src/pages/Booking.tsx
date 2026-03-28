@@ -65,9 +65,11 @@ const Booking = () => {
       `📅 Data: ${dateFormatted}\n` +
       `🕐 Horário: ${selectedTime}\n` +
       `💰 Valor: R$ ${service.price}\n\n` +
+      `📍 Endereço: https://maps.app.goo.gl/9i5Xc8LAdvyaRe7M8\n` +
+      `📌 Ref: Em cima da loja Chica Pitanga\n\n` +
       `Aguardo confirmação! 😊`
     );
-    const whatsappUrl = `https://wa.me/5527998277969?text=${msg}`;
+    const whatsappUrl = `https://wa.me/5527995764231?text=${msg}`;
 
     try {
       const dateStr = format(selectedDate, "yyyy-MM-dd");
@@ -96,10 +98,17 @@ const Booking = () => {
     <div className="min-h-screen bg-background">
       <nav className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-50">
         <div className="container flex items-center h-16 gap-4">
-          <Link to="/" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm">
-            <ArrowLeft className="w-4 h-4" />
-            Voltar
-          </Link>
+          {step > 1 ? (
+            <button onClick={() => setStep(step - 1)} className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm">
+              <ArrowLeft className="w-4 h-4" />
+              Voltar
+            </button>
+          ) : (
+            <Link to="/site" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors text-sm">
+              <ArrowLeft className="w-4 h-4" />
+              Voltar ao site
+            </Link>
+          )}
           <span className="font-display text-lg font-semibold text-foreground">
             <Sparkles className="inline w-4 h-4 mr-1 text-primary" />
             Agendar
@@ -327,6 +336,14 @@ const Booking = () => {
               <div className="flex justify-between">
                 <span className="font-medium text-foreground">Total</span>
                 <span className="font-bold text-primary text-lg">R$ {service.price}</span>
+              </div>
+              <hr />
+              <div className="space-y-1 text-sm">
+                <p className="text-muted-foreground">📍 Endereço:</p>
+                <a href="https://maps.app.goo.gl/9i5Xc8LAdvyaRe7M8" target="_blank" rel="noopener noreferrer" className="text-primary underline text-xs">
+                  Ver no Google Maps
+                </a>
+                <p className="text-muted-foreground">📌 Ref: Em cima da loja Chica Pitanga</p>
               </div>
             </div>
             <div className="flex justify-center gap-3">
