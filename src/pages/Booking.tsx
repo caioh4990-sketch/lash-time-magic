@@ -271,7 +271,12 @@ const Booking = () => {
                   selected={selectedDate}
                   onSelect={setSelectedDate}
                   locale={ptBR}
-                  disabled={(date) => date < new Date() || date.getDay() === 0}
+                  disabled={(date) => {
+                    const dateStr = format(date, "yyyy-MM-dd");
+                    return date < new Date() || blockedDateSet.has(dateStr);
+                  }}
+                  modifiers={{ blocked: (date) => blockedDateSet.has(format(date, "yyyy-MM-dd")) }}
+                  modifiersClassNames={{ blocked: "bg-destructive/20 text-destructive line-through" }}
                   className="pointer-events-auto"
                 />
               </div>
