@@ -66,18 +66,12 @@ const Index = () => {
             </div>
             <div className="absolute -bottom-4 -left-4 bg-card rounded-xl p-4 shadow-lg border">
               <div className="flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-medium text-primary">M</div>
-                  <div className="w-8 h-8 rounded-full bg-accent/30 flex items-center justify-center text-xs font-medium text-accent-foreground">A</div>
-                  <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center text-xs font-medium text-secondary-foreground">C</div>
+                <div className="w-10 h-10 rounded-full bg-primary/15 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-3 h-3 fill-accent text-accent" />
-                    ))}
-                  </div>
-                  <p className="text-xs text-muted-foreground">+200 clientes satisfeitas</p>
+                  <p className="text-sm font-semibold text-foreground">Profissional Certificada</p>
+                  <p className="text-xs text-muted-foreground">Formação nacional e internacional</p>
                 </div>
               </div>
             </div>
