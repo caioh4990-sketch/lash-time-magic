@@ -68,7 +68,7 @@ const Links = () => (
           }}
         >
           <Globe className="w-5 h-5 shrink-0" />
-          Entrar no Site
+          Agendamento pelo Site
           <ExternalLink className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
         </Link>
       </div>
