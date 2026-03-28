@@ -1,9 +1,9 @@
 import { Sparkles, Globe, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
-import heroImage from "@/assets/hero-lashes.jpg";
+import { avatarImage } from "@/assets/images";
 
 const WHATSAPP_URL =
-  "https://wa.me/5527998277969?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20um%20hor%C3%A1rio%20ou%20tirar%20d%C3%BAvidas";
+  "https://wa.me/5527995764231?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20um%20hor%C3%A1rio%20ou%20tirar%20d%C3%BAvidas";
 
 const Links = () => (
   <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-[#1a1118]">
@@ -17,7 +17,7 @@ const Links = () => (
       <div className="relative">
         <div className="w-28 h-28 rounded-full overflow-hidden ring-[3px] ring-[hsl(340_35%_55%)] ring-offset-4 ring-offset-[#1a1118] shadow-xl shadow-[hsl(340_35%_55%_/_0.2)]">
           <img
-            src={heroImage}
+            src={avatarImage}
             alt="Studio Karol Negrini"
             className="w-full h-full object-cover"
           />
