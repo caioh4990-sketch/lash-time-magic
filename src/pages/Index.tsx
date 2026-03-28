@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Sparkles, Clock, Star, ArrowRight } from "lucide-react";
 import { useServices } from "@/hooks/useServices";
 import GallerySection from "@/components/GallerySection";
-import heroImage from "@/assets/hero-lashes.jpg";
+import { heroImage } from "@/assets/images";
 
 const Index = () => {
   const { data: services, isLoading } = useServices();
@@ -161,7 +161,7 @@ const Index = () => {
             <a href="https://www.instagram.com/studio.karolnegrini/" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               Instagram
             </a>
-            <a href="https://wa.me/5527998277969" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
+            <a href="https://wa.me/5527995764231" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
               WhatsApp
             </a>
           </div>
