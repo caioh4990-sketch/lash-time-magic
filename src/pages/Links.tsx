@@ -16,10 +16,10 @@ const Links = () => (
       {/* Avatar */}
       <div className="relative">
         <div className="w-28 h-28 rounded-full overflow-hidden ring-[3px] ring-[hsl(340_35%_55%)] ring-offset-4 ring-offset-[#1a1118] shadow-xl shadow-[hsl(340_35%_55%_/_0.2)]">
-           <img
-20:             src={avatarImage}
-21:             alt="Studio Karol Negrini"
-22:             className="w-full h-full object-cover"
+          <img
+            src={avatarImage}
+            alt="Studio Karol Negrini"
+            className="w-full h-full object-cover"
           />
         </div>
         <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-[hsl(340,35%,55%)] flex items-center justify-center shadow-md">
