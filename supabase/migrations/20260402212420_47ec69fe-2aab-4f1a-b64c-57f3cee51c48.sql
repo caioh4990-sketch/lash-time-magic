@@ -1,0 +1,1 @@
+ALTER TABLE public.appointments ADD CONSTRAINT appointments_price_positive CHECK (price > 0);
