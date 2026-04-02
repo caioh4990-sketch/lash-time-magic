@@ -1,17 +1,41 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Sparkles, LogOut, Calendar, Clock, User, Phone, Settings, Image, Tag, CalendarCog } from "lucide-react";
+import { Sparkles, LogOut, Calendar, Clock, User, Phone, Settings, Image, Tag, CalendarCog, CheckCircle, XCircle, Filter } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+
+type TabKey = "confirmed" | "completed" | "cancelled" | "pending";
+
+const TABS: { key: TabKey; label: string; icon: React.ReactNode }[] = [
+  { key: "confirmed", label: "Agendados", icon: <Calendar className="w-4 h-4" /> },
+  { key: "pending", label: "Pendentes", icon: <Clock className="w-4 h-4" /> },
+  { key: "completed", label: "Concluídos", icon: <CheckCircle className="w-4 h-4" /> },
+  { key: "cancelled", label: "Cancelados", icon: <XCircle className="w-4 h-4" /> },
+];
+
+const statusColors: Record<string, string> = {
+  confirmed: "bg-green-900/30 text-green-400",
+  cancelled: "bg-red-900/30 text-red-400",
+  completed: "bg-blue-900/30 text-blue-400",
+  pending: "bg-yellow-900/30 text-yellow-400",
+};
+
+const statusLabels: Record<string, string> = {
+  confirmed: "Confirmado",
+  cancelled: "Cancelado",
+  completed: "Concluído",
+  pending: "Pendente",
+};
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [appointments, setAppointments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabKey>("confirmed");
 
   useEffect(() => {
     const init = async () => {
@@ -19,7 +43,6 @@ const Dashboard = () => {
       if (!session) { navigate("/login"); return; }
       setUser(session.user);
 
-      // Only admins can access dashboard
       const { data: roles } = await supabase
         .from("user_roles")
         .select("role")
@@ -63,19 +86,12 @@ const Dashboard = () => {
     }
   };
 
-  const statusColors: Record<string, string> = {
-    confirmed: "bg-green-900/30 text-green-400",
-    cancelled: "bg-red-900/30 text-red-400",
-    completed: "bg-blue-900/30 text-blue-400",
-    pending: "bg-yellow-900/30 text-yellow-400",
-  };
+  const filtered = appointments.filter((a) => a.status === activeTab);
 
-  const statusLabels: Record<string, string> = {
-    confirmed: "Confirmado",
-    cancelled: "Cancelado",
-    completed: "Concluído",
-    pending: "Pendente",
-  };
+  const counts = appointments.reduce((acc, a) => {
+    acc[a.status] = (acc[a.status] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
 
   if (loading) {
     return (
@@ -93,34 +109,34 @@ const Dashboard = () => {
             <Sparkles className="w-5 h-5 text-primary" />
             Studio Karol Negrini
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <Link to="/admin/servicos">
               <Button variant="outline" size="sm" className="gap-1.5">
                 <Settings className="w-4 h-4" />
-                Serviços
+                <span className="hidden sm:inline">Serviços</span>
               </Button>
             </Link>
             <Link to="/admin/categorias">
               <Button variant="outline" size="sm" className="gap-1.5">
                 <Tag className="w-4 h-4" />
-                Categorias
+                <span className="hidden sm:inline">Categorias</span>
               </Button>
             </Link>
             <Link to="/admin/galeria">
               <Button variant="outline" size="sm" className="gap-1.5">
                 <Image className="w-4 h-4" />
-                Galeria
+                <span className="hidden sm:inline">Galeria</span>
               </Button>
             </Link>
             <Link to="/admin/agenda">
               <Button variant="outline" size="sm" className="gap-1.5">
                 <CalendarCog className="w-4 h-4" />
-                Agenda
+                <span className="hidden sm:inline">Agenda</span>
               </Button>
             </Link>
             <Button variant="ghost" size="sm" onClick={handleLogout} className="gap-1.5 text-muted-foreground">
               <LogOut className="w-4 h-4" />
-              Sair
+              <span className="hidden sm:inline">Sair</span>
             </Button>
           </div>
         </div>
@@ -136,14 +152,45 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {appointments.length === 0 ? (
+        {/* Tabs */}
+        <div className="flex flex-wrap gap-2 mb-8">
+          {TABS.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={cn(
+                "flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium transition-all",
+                activeTab === tab.key
+                  ? "bg-primary text-primary-foreground shadow-sm"
+                  : "bg-card border text-muted-foreground hover:bg-primary/10 hover:text-primary"
+              )}
+            >
+              {tab.icon}
+              {tab.label}
+              {counts[tab.key] > 0 && (
+                <span className={cn(
+                  "ml-1 px-2 py-0.5 rounded-full text-xs font-bold",
+                  activeTab === tab.key
+                    ? "bg-primary-foreground/20 text-primary-foreground"
+                    : "bg-muted text-muted-foreground"
+                )}>
+                  {counts[tab.key]}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {filtered.length === 0 ? (
           <div className="text-center py-16 space-y-4">
-            <Calendar className="w-12 h-12 mx-auto text-muted-foreground/50" />
-            <p className="text-muted-foreground">Nenhum agendamento encontrado.</p>
+            <Filter className="w-12 h-12 mx-auto text-muted-foreground/50" />
+            <p className="text-muted-foreground">
+              Nenhum agendamento com status "{statusLabels[activeTab]}".
+            </p>
           </div>
         ) : (
           <div className="space-y-4">
-            {appointments.map((apt, i) => (
+            {filtered.map((apt, i) => (
               <div
                 key={apt.id}
                 className="bg-card rounded-xl border p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:shadow-sm transition-shadow"
@@ -176,14 +223,15 @@ const Dashboard = () => {
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-3 flex-shrink-0">
                   <span className={cn("px-3 py-1 rounded-full text-xs font-medium", statusColors[apt.status] || "bg-muted text-muted-foreground")}>
                     {statusLabels[apt.status] || apt.status}
                   </span>
                   <span className="font-semibold text-primary">
                     R$ {apt.price}
                   </span>
-                  {apt.status === "confirmed" && (
+                  {/* Action buttons based on current status */}
+                  {(apt.status === "confirmed" || apt.status === "pending") && (
                     <div className="flex gap-1">
                       <Button
                         variant="ghost"
@@ -202,6 +250,26 @@ const Dashboard = () => {
                         Cancelar
                       </Button>
                     </div>
+                  )}
+                  {apt.status === "cancelled" && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => handleStatusChange(apt.id, "confirmed")}
+                    >
+                      Reativar
+                    </Button>
+                  )}
+                  {apt.status === "completed" && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs"
+                      onClick={() => handleStatusChange(apt.id, "confirmed")}
+                    >
+                      Reabrir
+                    </Button>
                   )}
                 </div>
               </div>
