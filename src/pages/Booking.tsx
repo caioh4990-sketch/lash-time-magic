@@ -68,14 +68,14 @@ const Booking = () => {
     const dateFormatted = format(selectedDate, "dd/MM/yyyy");
     const msg = encodeURIComponent(
       `Olá! Acabei de agendar pelo site:\n\n` +
-      `👤 Nome: ${clientName}\n` +
-      `📋 Serviço: ${service.title}\n` +
-      `📅 Data: ${dateFormatted}\n` +
-      `🕐 Horário: ${selectedTime}\n` +
-      `💰 Valor: R$ ${service.price}\n\n` +
-      `📍 Endereço: https://maps.app.goo.gl/9i5Xc8LAdvyaRe7M8\n` +
-      `📌 Ref: Em cima da loja Chica Pitanga\n\n` +
-      `Aguardo confirmação! 😊`
+      `\u2022 Nome: ${clientName}\n` +
+      `\u2022 Serviço: ${service.title}\n` +
+      `\u2022 Data: ${dateFormatted}\n` +
+      `\u2022 Horário: ${selectedTime}\n` +
+      `\u2022 Valor: R$ ${service.price}\n\n` +
+      `\u2022 Endereço: https://maps.app.goo.gl/9i5Xc8LAdvyaRe7M8\n` +
+      `\u2022 Ref: Em cima da loja Chica Pitanga\n\n` +
+      `Aguardo confirmação!`
     );
     const whatsappUrl = `https://wa.me/5527995764231?text=${msg}`;
 
