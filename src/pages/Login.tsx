@@ -9,10 +9,8 @@ import { toast } from "sonner";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -20,23 +18,10 @@ const Login = () => {
     setLoading(true);
 
     try {
-      if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { full_name: name },
-            emailRedirectTo: window.location.origin,
-          },
-        });
-        if (error) throw error;
-        toast.success("Conta criada! Verifique seu email para confirmar.");
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        toast.success("Login realizado com sucesso!");
-        navigate("/dashboard");
-      }
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success("Login realizado com sucesso!");
+      navigate("/dashboard");
     } catch (error: any) {
       toast.error(error.message || "Erro ao processar. Tente novamente.");
     } finally {
@@ -56,18 +41,10 @@ const Login = () => {
             <Sparkles className="w-6 h-6 text-primary" />
             Studio Karol Negrini
           </div>
-          <p className="text-muted-foreground">
-            {isSignUp ? "Crie sua conta" : "Entre na sua conta"}
-          </p>
+          <p className="text-muted-foreground">Acesso administrativo</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          {isSignUp && (
-            <div className="space-y-2">
-              <Label htmlFor="name">Nome completo</Label>
-              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="Maria Silva" required />
-            </div>
-          )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="seu@email.com" required />
@@ -77,16 +54,9 @@ const Login = () => {
             <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" required minLength={6} />
           </div>
           <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? "Processando..." : isSignUp ? "Criar conta" : "Entrar"}
+            {loading ? "Processando..." : "Entrar"}
           </Button>
         </form>
-
-        <p className="text-center text-sm text-muted-foreground">
-          {isSignUp ? "Já tem uma conta?" : "Não tem conta?"}{" "}
-          <button onClick={() => setIsSignUp(!isSignUp)} className="text-primary font-medium hover:underline">
-            {isSignUp ? "Entrar" : "Criar conta"}
-          </button>
-        </p>
       </div>
     </div>
   );
