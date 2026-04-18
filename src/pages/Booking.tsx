@@ -46,15 +46,31 @@ const Booking = () => {
   // Build blocked date set for calendar
   const blockedDateSet = new Set(blockedDates?.map((b) => b.blocked_date) || []);
 
-  // Compute available times from DB, filtering by day of week and booked slots
+  // Compute available times from DB, filtering by day of week, booked slots
+  // and (when the selected date is today) past times.
   useEffect(() => {
     if (!selectedDate || !dbTimes) { setAvailableTimes([]); setSelectedTime(null); return; }
     const dayOfWeek = selectedDate.getDay();
     const booked = new Set(bookedSlots || []);
+
+    const now = new Date();
+    const isToday =
+      selectedDate.getFullYear() === now.getFullYear() &&
+      selectedDate.getMonth() === now.getMonth() &&
+      selectedDate.getDate() === now.getDate();
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
     const times = dbTimes
       .filter((t) => t.day_of_week.includes(dayOfWeek))
       .map((t) => t.time_slot)
-      .filter((t) => !booked.has(t));
+      .filter((t) => !booked.has(t))
+      .filter((t) => {
+        if (!isToday) return true;
+        const [h, m] = t.split(":").map(Number);
+        return h * 60 + m > nowMinutes;
+      })
+      .sort();
+
     setAvailableTimes(times);
     setSelectedTime(null);
   }, [selectedDate, dbTimes, bookedSlots]);
