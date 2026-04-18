@@ -57,7 +57,8 @@ const Dashboard = () => {
       const { data, error } = await supabase
         .from("appointments")
         .select("*")
-        .order("appointment_date", { ascending: true });
+        .order("appointment_date", { ascending: false })
+        .limit(500);
 
       if (error) toast.error("Erro ao carregar agendamentos.");
       else setAppointments(data || []);
